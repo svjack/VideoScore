@@ -66,8 +66,13 @@ This is the official repo for our EMNLP 2024 paper "VideoScore: Building Automat
 这些维度共同构成了对视频质量的多方面评估，涵盖了从视觉表现到内容一致性的各个方面。
 
 ## 示例
+- APP
+```bash
+python app_regression.py
+```
+Or
+- 脚本
 以下是一个使用 `video_regression_script.py` 的示例：
-
 ```bash
 python video_regression_script.py "" xiangling_mp4_dir_tiny
 ```
