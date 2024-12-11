@@ -97,7 +97,88 @@ print(edf.sort_values(by = "temporal consistency", ascending = True).head(5).to_
 | 25 | solo,Xiangling,_brush_teeth_with_a_toothbrush__genshin_impact__,1girl,highres,_seed_2612536091.mp4 |             2.75 |                   1.23 |             2.91 |                      2.67 |                  1.44 |
 | 14 | solo,Xiangling,_store_trash_in_a_bag__genshin_impact__,1girl,highres,_seed_4130052080.mp4          |             2.72 |                   1.25 |             2.86 |                      2.77 |                  1.27 |
 
+## Make video dataset in svjack/Genshin-Impact-XiangLing-animatediff-with-score-organized
+```python
+import os
+import shutil
+import uuid
+import pandas as pd
+from pathlib import Path
+from tqdm import tqdm  # 用于显示进度条
 
+# 读取 evaluation_results.csv 文件
+vdf = pd.read_csv("xiangling_benchmark_dir/evaluation_results.csv")
+
+# 将 video_name 列的路径转换为完整路径
+vdf["video_name"] = vdf["video_name"].map(lambda x: os.path.join("xiangling_benchmark_dir/xiangling_mp4_dir_total/", x))
+
+def process_files(input_path, output_path, prefix=""):
+    # 创建输出路径
+    os.makedirs(output_path, exist_ok=True)
+
+    # 获取所有 mp4 文件
+    mp4_files = list(Path(input_path).rglob("*.mp4"))
+
+    # 创建 metadata 列表
+    metadata = []
+
+    # 使用 tqdm 显示进度条
+    for mp4_file in tqdm(mp4_files, desc="Processing files"):
+        # 生成 UUID
+        unique_id = str(uuid.uuid4())
+
+        # 构建新的文件名
+        new_mp4_file = Path(output_path) / f"{unique_id}.mp4"
+        new_txt_file = Path(output_path) / f"{unique_id}.txt"
+
+        # 拷贝 mp4 文件到新路径并重命名
+        shutil.copy(mp4_file, new_mp4_file)
+
+        # 解析视频路径，生成 prompt
+        video_name = Path(mp4_file).name  # 获取文件名
+        video_name_without_seed = video_name.split("_seed_")[0]  # 去掉 _seed_xxxxxx.mp4 部分
+        video_name_without_seed = video_name_without_seed.replace("_", " ")  # 将下划线替换为空格
+
+        # 在内容前添加 prefix
+        modified_prompt = f"{prefix}{video_name_without_seed}"
+
+        # 将修改后的内容写入新的 txt 文件
+        with open(new_txt_file, "w", encoding="utf-8") as f:
+            f.write(modified_prompt)
+
+        # 从 vdf 中提取相关信息
+        row = vdf[vdf["video_name"] == str(mp4_file)]
+        if not row.empty:
+            visual_quality = row["visual quality"].values[0]
+            temporal_consistency = row["temporal consistency"].values[0]
+            dynamic_degree = row["dynamic degree"].values[0]
+            factual_consistency = row["factual consistency"].values[0]
+
+            # 添加到 metadata 列表
+            metadata.append({
+                "file_name": f"{unique_id}.mp4",
+                "prompt": modified_prompt,
+                "visual quality": visual_quality,
+                "temporal consistency": temporal_consistency,
+                "dynamic degree": dynamic_degree,
+                "factual consistency": factual_consistency,
+                "original_file_name": video_name,  # 添加重命名前的文件名
+            })
+
+    # 生成 metadata.csv 文件
+    df = pd.DataFrame(metadata)
+    df.to_csv(Path(output_path) / "metadata.csv", index=False)
+
+# 示例调用
+input_path = "xiangling_benchmark_dir/xiangling_mp4_dir_total"
+output_path = "xiangling_benchmark_dir/xiangling_processed"
+process_files(input_path, output_path)
+```
+
+## And upload by (pip install huggingface_hub)
+```bash
+huggingface-cli upload svjack/Genshin-Impact-XiangLing-animatediff-with-score-organized xiangling_processed/* . --repo-type dataset
+```
 
 ## News
 [2024-11-28] Try on our new version [VideoScore-v1.1](https://huggingface.co/TIGER-Lab/VideoScore-v1.1), with better performance in **"text-to-video alignment"** subscore and the support for **48 frames** in inference now!
