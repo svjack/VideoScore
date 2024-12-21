@@ -58,6 +58,7 @@ processor = AutoProcessor.from_pretrained("TIGER-Lab/VideoScore")
 model = Idefics2ForSequenceClassification.from_pretrained("TIGER-Lab/VideoScore", torch_dtype=torch.bfloat16).eval()
 
 MAX_NUM_FRAMES = 24
+MAX_NUM_FRAMES = 19
 conv_template = conv_templates["idefics_2"]
 
 VIDEO_EVAL_PROMPT = """
@@ -138,6 +139,11 @@ def eval_video(prompt, video: str):
     container = av.open(video)
 
     total_frames = container.streams.video[0].frames
+
+    print("video: ", video)
+    print("prompt: ", prompt)
+    print("-" * 100)
+    
     if total_frames > MAX_NUM_FRAMES:
         indices = np.arange(0, total_frames, total_frames / MAX_NUM_FRAMES).astype(int)
     else:
