@@ -76,6 +76,10 @@ Or
 ```bash
 python video_regression_script.py "" xiangling_mp4_dir_tiny
 ```
+Or
+```bash
+python video_regression_with_prompt_script.py xiangling_mp4_dir_tiny
+```
 
 ### 结果分析
 使用 Pandas 读取并分析评估结果：
