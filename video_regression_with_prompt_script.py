@@ -139,15 +139,17 @@ def eval_video(prompt, video: str):
     container = av.open(video)
 
     total_frames = container.streams.video[0].frames
-
-    print("video: ", video)
-    print("prompt: ", prompt)
-    print("-" * 100)
     
     if total_frames > MAX_NUM_FRAMES:
         indices = np.arange(0, total_frames, total_frames / MAX_NUM_FRAMES).astype(int)
     else:
         indices = np.arange(total_frames)
+
+    print("video: ", video)
+    print("prompt: ", prompt)
+    print("indices: ", indices)
+    print("-" * 100)
+    
     video_frames = read_video_pyav(container, indices)
 
     frames = [Image.fromarray(x) for x in video_frames]
