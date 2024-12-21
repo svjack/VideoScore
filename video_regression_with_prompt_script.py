@@ -1,3 +1,41 @@
+'''
+python video_regression_with_prompt_script.py xiangling_mp4_dir_tiny
+
+1. **visual quality**:
+   - **涵义**: 视觉质量
+   - **解释**: 视频在清晰度、分辨率、亮度和色彩等方面的质量。这个维度评估视频的视觉表现，包括图像的清晰度、色彩的准确性和整体的视觉吸引力。
+
+2. **temporal consistency**:
+   - **涵义**: 时间一致性
+   - **解释**: 视频中物体或人物的一致性。这个维度评估视频在时间上的连贯性，即视频中的物体或人物在不同帧之间是否保持一致，没有明显的跳跃或不连贯的现象。
+
+3. **dynamic degree**:
+   - **涵义**: 动态程度
+   - **解释**: 视频中动态变化的程度。这个维度评估视频的动态性，即视频中物体或场景的变化程度，包括运动的频率和幅度。
+
+4. **text-to-video alignment**:
+   - **涵义**: 文本与视频的对齐
+   - **解释**: 文本提示与视频内容之间的对齐程度。这个维度评估视频内容与给定文本提示之间的匹配程度，即视频是否准确地反映了文本提示所描述的内容。
+
+5. **factual consistency**:
+   - **涵义**: 事实一致性
+   - **解释**: 视频内容与常识和事实知识的一致性。这个维度评估视频内容是否符合常识和事实知识，即视频中的内容是否真实可信，没有明显的逻辑错误或与现实不符的情况。
+
+import pandas as pd
+edf = pd.read_csv("evaluation_results.csv")
+edf.describe()
+
+print(edf.sort_values(by = "temporal consistency", ascending = True).head(5).to_markdown())
+
+|    | video_name                                                                                         |   visual quality |   temporal consistency |   dynamic degree |   text-to-video alignment |   factual consistency |
+|---:|:---------------------------------------------------------------------------------------------------|-----------------:|-----------------------:|-----------------:|--------------------------:|----------------------:|
+| 26 | solo,Xiangling,_shave_with_a_razor__genshin_impact__,1girl,highres,_seed_3140464511.mp4            |             2.8  |                   1.14 |             2.97 |                      2.78 |                  1.26 |
+|  0 | solo,Xiangling,_carry_money_in_a_wallet__genshin_impact__,1girl,highres,_seed_1294598571.mp4       |             2.69 |                   1.2  |             2.88 |                      2.7  |                  1.34 |
+|  9 | solo,Xiangling,_sweep_dust_with_a_broom__genshin_impact__,1girl,highres,_seed_3483804345.mp4       |             2.72 |                   1.22 |             2.89 |                      2.86 |                  1.2  |
+| 25 | solo,Xiangling,_brush_teeth_with_a_toothbrush__genshin_impact__,1girl,highres,_seed_2612536091.mp4 |             2.75 |                   1.23 |             2.91 |                      2.67 |                  1.44 |
+| 14 | solo,Xiangling,_store_trash_in_a_bag__genshin_impact__,1girl,highres,_seed_4130052080.mp4          |             2.72 |                   1.25 |             2.86 |                      2.77 |                  1.27 |
+'''
+
 import os
 import time
 import json
